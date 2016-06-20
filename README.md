@@ -1,2 +1,2 @@
 # trilla
-Sync Trello cards with Bugzilla bugs!
+Sync Trello cards from Bugzilla bugs!
