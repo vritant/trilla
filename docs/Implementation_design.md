@@ -13,9 +13,9 @@
 * usage: `trilla MODULE-NAME [MODULE-OPTIONS] [-p PROFILE-NAME]`
 * examples:
  * track usages:
-   * trilla track --bugs --priority=HIGH --severity=HIGH --keywords=Triaged,EasyFix --states=NEW,ASSIGNED
-    * trilla track --issues --all
-    * trilla track --pr --labels=None --state=OPEN
+   * trilla track bugs --priority=HIGH --severity=HIGH --keywords=Triaged,EasyFix --states=NEW,ASSIGNED
+    * trilla track issues --all
+    * trilla track pr --labels=None --state=OPEN
  * sync usages:
    * trilla sync -p my_project_profile
   * untrack usages:
