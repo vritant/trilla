@@ -4,6 +4,7 @@ from __future__ import print_function
 import pprint
 
 import zilla
+import trello
 
 def get_bugs(url, cli_args):
     #TODO: use cli_args
