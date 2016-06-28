@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import click
+import trilla
 
 class Config(object):
     def __init__(self):
@@ -21,10 +22,14 @@ def track():
     """Track entities"""
 
 @track.command()
+@click.option('--url', default="bugzilla.redhat.com", help="bugillz url")
+@click.argument('output', type=click.File('wb'))
 @pass_config
-def bugs(config):
+def bugs(config, url, output):
     """Track bugzillla bugs"""
-    click.echo("Profile %s" % config.profile)
+    bugs = trilla.get_bugs(url, config)
+    for bug in bugs:
+        output.write(str(bug.id) + "\n")
 
 @track.command()
 @pass_config

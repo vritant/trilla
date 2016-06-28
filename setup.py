@@ -11,6 +11,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'Click>=6.0',
+    'python-bugzilla>=1.2.2',
     # TODO: put package requirements here
 ]
 
