@@ -3,10 +3,7 @@
 import sys
 import trilla
 from okaara.cli import Cli, Section, Command
-
-class Config(object):
-    def __init__(self, profile="default"):
-        self.profile = profile
+from config import Config, NotConfiguredError, ConfigurationError
 
 class BaseCommand(Command):
     def __init__(self, name, description, action, prompt):
@@ -15,13 +12,31 @@ class BaseCommand(Command):
         self.create_option('--profile', "the target configuration profile", required=False,
             aliases=['-p'])
 
+
+class ConfigurationCommand(BaseCommand):
+    def __init__(self, prompt):
+        BaseCommand.__init__(self, "config", "use to configure trilla", self.configure, prompt)
+
+    def configure(self):
+        self.prompt.write("Implement the configure command.")
+
+
 class ConfigurationReadyCommand(BaseCommand):
     def __init__(self, name, description, action, prompt):
         BaseCommand.__init__(self, name, description, self._do_command, prompt)
         self.action = action
 
     def _do_command(self, **kwargs):
-        self.action(Config(kwargs["profile"]), **kwargs)
+        try:
+            config = Config(kwargs['profile'])
+        except NotConfiguredError, e:
+            self.prompt.write("trilla is not configured. Run 'trilla config' to configure it!")
+            sys.exit(1)
+        except ConfigurationError, e:
+            self.prompt.write(e.message )
+            sys.exit(1)
+        self.action(config, **kwargs)
+
     
 class TrillaCli(Cli):
     def __init__(self):
@@ -39,6 +54,8 @@ class TrillaCli(Cli):
         untrack_command = ConfigurationReadyCommand('untrack', "untrack entities", self.untrack,
             self.prompt)
         self.add_command(untrack_command)
+        
+        self.add_command(ConfigurationCommand(self.prompt))
 
     def sync(self, config, **kwargs):
         self.prompt.write("Using profile: %s" % config.profile)
@@ -85,3 +102,4 @@ def run():
 
 if __name__ == "__main__":
     run()
+
