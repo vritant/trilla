@@ -4,16 +4,25 @@ from __future__ import print_function
 import pprint
 
 import zilla
-import trello
+from config import Config
+from t_trello import Trello
 
-def get_bugs(url, cli_args):
-    #TODO: use cli_args
-    params = { 'zilla_url': url,
-               'query': { 'product':'Red Hat Enterprise Linux 7',
-                          'component':'subscription-manager',
-                          'status':["NEW","ASSIGNED","CLOSED"],
-                          'priority':'high',
-                          'bug_severity':'medium'}}
 
-    bugs = zilla.get_bugs(params)
-    return bugs
+class Trilla(object):
+    def __init__(self, profile):
+        config = Config(profile)
+        self.trello = Trello(config)
+    
+    def list_cards(self):
+        return self.trello.get_cards("TODO")
+
+
+    def get_bugs(self, url):
+        params = { 'zilla_url': url,
+                   'query': { 'product':'Red Hat Enterprise Linux 7',
+                              'component':'subscription-manager',
+                              'status':["NEW","ASSIGNED","CLOSED"],
+                              'priority':'high',
+                              'bug_severity':'medium'}}
+        bugs = zilla.get_bugs(params)
+        return bugs

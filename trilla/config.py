@@ -30,6 +30,16 @@ class Config(object):
             raise ConfigurationError("Specified profile '%s 'does not exist!" % active_profile)
         
         profile = profiles[active_profile]
+        self.trello = TrelloConfig(profile)
+
+
+class TrelloConfig(object):
+    def __init__(self, profile_dict):
+        trello_conf = get('trello', profile_dict)
+        self.api_key = get('api_key', trello_conf)
+        self.api_secret = get('api_secret', trello_conf)
+        self.oauth_token = get('oauth_token', trello_conf)
+        self.oauth_token_secret = get('oauth_token_secret', trello_conf)
 
 
 def get(section, config_dict):
