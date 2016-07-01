@@ -34,7 +34,7 @@ setup(
                  'trilla'},
     entry_points={
         'console_scripts': [
-            'trilla=trilla.cli:main'
+            'trilla=trilla.cli:run'
         ]
     },
     include_package_data=True,

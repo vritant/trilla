@@ -1,61 +1,87 @@
 # -*- coding: utf-8 -*-
 
-import click
+import sys
 import trilla
+from okaara.cli import Cli, Section, Command
 
 class Config(object):
+    def __init__(self, profile="default"):
+        self.profile = profile
+
+class BaseCommand(Command):
+    def __init__(self, name, description, action, prompt):
+        Command.__init__(self, name, description, action)
+        self.prompt = prompt
+        self.create_option('--profile', "the target configuration profile", required=False,
+            aliases=['-p'])
+
+class ConfigurationReadyCommand(BaseCommand):
+    def __init__(self, name, description, action, prompt):
+        BaseCommand.__init__(self, name, description, self._do_command, prompt)
+        self.action = action
+
+    def _do_command(self, **kwargs):
+        self.action(Config(kwargs["profile"]), **kwargs)
+    
+class TrillaCli(Cli):
     def __init__(self):
-        self.profile = "default"
+        Cli.__init__(self)
+        self.add_section(TrackSection(self.prompt))
+        
+        sync_command = ConfigurationReadyCommand('sync', "sync tracked entities", self.sync,
+            self.prompt)
+        sync_command.create_flag('--all', "sync all tracked bugs, github issues and PRs",)
+        sync_command.create_flag('--all-bugs', "sync all tracked bugs")
+        sync_command.create_flag('--all-prs', "sync all tracked pull requests")
+        sync_command.create_flag('--all-issues', "sync all tracked github issues")
+        self.add_command(sync_command)
+        
+        untrack_command = ConfigurationReadyCommand('untrack', "untrack entities", self.untrack,
+            self.prompt)
+        self.add_command(untrack_command)
 
-pass_config = click.make_pass_decorator(Config, ensure = True)
+    def sync(self, config, **kwargs):
+        self.prompt.write("Using profile: %s" % config.profile)
+        self.prompt.write("Implement sync command %s" % kwargs['all'])
+    
+    def untrack(self, config, **kwargs):
+        self.prompt.write("Implement untrack command.")
 
-@click.group()
-@click.option('--profile','-p', default = "default", help="profile name")
-@pass_config
-def main(config, profile):
-    """Console script for trilla"""
-    config.profile = profile
-    pass
 
-@main.group()
-def track():
-    """Track entities"""
+class TrackSection(Section):
+    def __init__(self, prompt):
+        Section.__init__(self, 'track', 'Track entities')
+        self.prompt = prompt
+        
+        track_bugs_command = ConfigurationReadyCommand('bugs', "track bugs", self.bugs, self.prompt)
+        track_bugs_command.create_option('--url', "the bugzilla url", default="bugzilla.redhat.com")
+        self.add_command(track_bugs_command)
+        
+        track_prs_command = ConfigurationReadyCommand('prs', "track github pull requests",
+            self.pull_requests, self.prompt)
+        self.add_command(track_prs_command)
+        
+        track_issues_command = ConfigurationReadyCommand('issues', "track github issues",
+            self.issues, self.prompt)
+        self.add_command(track_issues_command)
+        
 
-@track.command()
-@click.option('--url', default="bugzilla.redhat.com", help="bugillz url")
-@click.argument('output', type=click.File('wb'))
-@pass_config
-def bugs(config, url, output):
-    """Track bugzillla bugs"""
-    bugs = trilla.get_bugs(url, config)
-    for bug in bugs:
-        output.write(str(bug.id) + "\n")
+    def bugs(self, config, **kwargs):
+        """Track bugzillla bugs"""
+        url = kwargs['url']
+        bugs = trilla.get_bugs(url, config)
+        for bug in bugs:
+            self.prompt.write(str(bug.id) + "\n")
 
-@track.command()
-@pass_config
-def prs(config):
-    """Track github PRs"""
+    def pull_requests(self, config, **kwargs):
+        self.prompt.write("Implement track PRs")
 
-@track.command()
-@pass_config
-def issues(config):
-    """Track github issues"""
+    def issues(self, config, **kwargs):
+        self.prompt.write("Implement track issues")
+        
 
-@main.command()
-@click.option('--all-bugs', help="sync all tracked bugzilla bugs")
-@click.option('--all-prs', help="sync all tracked github PRs")
-@click.option('--all-issues', help="sync all tracked github issues")
-@click.option('--all', help="sync all tracked bugs, github issues and PRs")
-@pass_config
-def sync(config, all_bugs, all_prs, all_issues, all):
-    """Sync tracked entities"""
-    click.echo('Implement Sync command')
-
-@main.command()
-@pass_config
-def untrack(config):
-    """Untrack specific entities"""
-    click.echo('Implement untrack')
+def run():
+    sys.exit(TrillaCli().run(sys.argv[1:]))
 
 if __name__ == "__main__":
-    main()
+    run()
