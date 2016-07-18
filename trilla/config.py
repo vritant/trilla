@@ -47,6 +47,9 @@ class Config(object):
         # Load the config file.
         with open(TRILLA_CONFIG_FILE, 'r') as yaml_file:
             parsed_config = yaml.load(yaml_file)
+            if not self.active_profile:
+                self.active_profile = _get("default_profile", parsed_config)
+
             profiles = _get("profiles", parsed_config)
             if not profiles or not self.active_profile in profiles.keys():
                 # TODO Try the default profile if one was configured.
