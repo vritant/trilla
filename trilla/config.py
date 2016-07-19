@@ -29,10 +29,14 @@ class Config(object):
         self.target_board = "Testing Trilla"
         self.target_list = "TODO"
         self.trello = TrelloConfig()
+        self.bzilla = BugzillaConfig()
 
         # If a config file exists, override existing.
         self._apply_file_values()
         self._apply_env_values()
+
+    def update_bzilla(self, url=None):
+        self.bzilla.update(url)
 
     def update_trello(self, api_token=None, api_secret=None, oauth_token=None,
         oauth_token_secret=None):
@@ -98,6 +102,25 @@ class TrelloConfig(object):
             self.oauth_token = oauth_token
         if oauth_token_secret:
             self.oauth_token_secret = oauth_token_secret
+
+
+class BugzillaConfig(object):
+    """
+    Defines all config options related to the bugilla connection.
+    """
+    def __init__(self):
+        self.url = ""
+
+    def apply(self, profile_dict):
+        bzilla_conf = profile_dict['bugzilla']
+        if not bzilla_conf:
+            return
+
+        self.url = _get('url', bzilla_conf) or self.url
+
+    def update(self, url=None):
+        if url:
+            self.url = url
 
 
 def _get(name, config_dict, default_value=None):

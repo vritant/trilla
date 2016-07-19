@@ -3,14 +3,14 @@
 from __future__ import print_function
 import pprint
 
-import zilla
+from bzilla import Bugzilla
 from config import Config
 from t_trello import Trello
-
 
 class Trilla(object):
     def __init__(self, config):
         self.trello = Trello(config)
+        self.bzilla = Bugzilla(config)
 
     def list_cards(self, trello_board=None, trello_list=None):
         """
@@ -19,13 +19,18 @@ class Trilla(object):
         """
         return self.trello.get_cards(trello_board, trello_list)
 
-    # TODO Move this into an bugzilla object.
-    def get_bugs(self, url):
+    def get_bugs(self, url, cli_args, include):
+        #TODO: use cli_args
         params = { 'zilla_url': url,
                    'query': { 'product':'Red Hat Enterprise Linux 7',
                               'component':'subscription-manager',
                               'status':["NEW","ASSIGNED","CLOSED"],
                               'priority':'high',
-                              'bug_severity':'medium'}}
-        bugs = zilla.get_bugs(params)
-        return bugs
+                              'bug_severity':'medium'},
+                   'include': include}
+
+        return self.yaml_wrap(self.bzilla.get_bugs(params))
+
+    def yaml_wrap(self, entities):
+        result = "---\n#Comment line to ignore:\n" + entities + "...\n"
+        return result
