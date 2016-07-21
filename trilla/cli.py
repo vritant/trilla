@@ -26,7 +26,8 @@ def search(config):
     pass
 
 @search.command()
-@click.option('--url', default="bugzilla.redhat.com", help="bugillz url")
+@click.option('--url', default="bugzilla.redhat.com", help="bugilla url")
+@click.option('--query', type=(click.Choice(['product', 'component', 'priority']),str), multiple=True)
 @click.option('--include', '-i', multiple=True,
               type=click.Choice(['product', 'component', 'version',
                                   'assigned_to', 'qa_contact', 'status',
@@ -34,12 +35,16 @@ def search(config):
                                       'priority', 'summary']))
 @click.argument('output', type=click.File('wb'), default="-")
 @pass_config
-def bugs(config, url, include, output):
+def bugs(config, url, query, include, output):
     """Track bugzillla bugs"""
     config.update_bzilla(url)
     trilla = Trilla(config)
     include = list(include)
-    bugs = trilla.get_bugs(url, config, include)
+    search_params = {}
+    for param in query:
+        key, value = param
+        search_params[key] = value
+    bugs = trilla.get_bugs(url, search_params, include)
     output.write(bugs)
 
 @search.command()

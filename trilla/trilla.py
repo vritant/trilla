@@ -22,11 +22,7 @@ class Trilla(object):
     def get_bugs(self, url, cli_args, include):
         #TODO: use cli_args
         params = { 'zilla_url': url,
-                   'query': { 'product':'Red Hat Enterprise Linux 7',
-                              'component':'subscription-manager',
-                              'status':["NEW","ASSIGNED","CLOSED"],
-                              'priority':'high',
-                              'bug_severity':'medium'},
+                   'query': cli_args,
                    'include': include}
 
         return self.yaml_wrap(self.bzilla.get_bugs(params))
