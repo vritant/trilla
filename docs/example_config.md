@@ -26,17 +26,17 @@
 -
   rules:
     -
-      from: BUG_ASSIGNED
-      name: "rule 1"
-      to: CARD_BOARD_LIST
+      rule1:
+          from: BUG_ASSIGNED
+          to: CARD_BOARD_LIST
     -
-      from: "BUG_ASSIGNED, BUG_NEW"
-      name: "rule 2"
-      to: CARD_BOARD_LIST
+      rule 2:
+          from: "BUG_ASSIGNED, BUG_NEW"
+          to: CARD_BOARD_LIST
     -
-      from: CARD_BOARD_LIST
-      name: "rule 3"
-      to: ISSUE_LABEL_NAME
+      rule3:
+          from: CARD_BOARD_LIST
+          to: ISSUE_LABEL_NAME
 -
   users:
     -
