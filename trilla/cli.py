@@ -15,12 +15,6 @@ def main(ctx, profile):
 
 @main.group()
 @pass_config
-def track(config):
-    """Track entities"""
-    pass
-
-@main.group()
-@pass_config
 def search(config):
     """Search entities"""
     pass
@@ -75,6 +69,13 @@ def prs(config):
 def issues(config):
     """Track github issues"""
     output.write("Implement me!!!")
+
+@main.group()
+@pass_config
+@click.argument('input', type=click.File('rb'))
+def track(config):
+    """Track entities"""
+    pass
 
 @main.command()
 @click.option('--all-bugs', help="sync all tracked bugzilla bugs")

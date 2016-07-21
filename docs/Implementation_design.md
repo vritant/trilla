@@ -1,8 +1,17 @@
+### ENTITIES
+* Trilla can be used to sync the following entities
+ * Bugzilla bugs ( phase 1 )
+ * Trello cards ( phase 1 )
+ * Github issues ( phase 2 )
+ * Github pull requests ( phase 2 )
+
 ### OPERATIONS
-* The tool can be used to perform following operations:
- * search and filter bugzillas, github issues, pull requests to be tracked, and mark them tracked, create trello cards if none exist.
- * sync all tracked bugs with the cards
- * untrack specific entities
+* The tool can be used to perform following operations on the above entities:
+ * **search** entities to be tracked, and output the search result in YAML format
+ * **track** entities by accepting a list of entities in a YAML file and adding it to the database
+ * **sync** specific / all tracked bugs based on rules defined in configurated profiles
+ * **untrack** specific entities specified directly or based on profile rules
+ * **configure** trilla if not already configured, via interactive questions. If already configured, open an editable file with current configuration.
 
 ### NOTES
 * the tool itself should not use its own database, and should rely on bugzilla keywords / github labels / trello labels to fetch the current state.
