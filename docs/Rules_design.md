@@ -3,9 +3,9 @@
 * A profile can be configured to apply a subset of rules defined using the rule names.
 * format of a rule is :
 ```
-      name: rule name
-      from: ENTITY_STATE(, ENTITY_STATE)
-      to: ENTITY_STATE
+      rule name:
+          from: ENTITY_STATE(, ENTITY_STATE)
+          to: ENTITY_STATE
 ```
 * where an **entity_state** definition could be one of:
   * BUG_*bugId*
